@@ -1,1 +1,1 @@
-@2017 Iambluedev All rights reserved.
+©2017 Iambluedev All rights reserved.
