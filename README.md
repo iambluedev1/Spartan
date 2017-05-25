@@ -14,5 +14,6 @@ Features :
  - logger sys
  - config sys
  - download sys
+ - gamemode sys
  
  
