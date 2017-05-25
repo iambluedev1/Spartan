@@ -11,4 +11,14 @@ public class Ports {
 		return socket.getLocalPort();
 	}
 	
+	public static boolean isAvailable(Integer port){
+		try {
+			ServerSocket socket = new ServerSocket(port);
+			socket.close();
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+	
 }

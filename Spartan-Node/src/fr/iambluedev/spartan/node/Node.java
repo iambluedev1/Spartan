@@ -24,7 +24,7 @@ public class Node extends SpartanNode{
 	private File log;
 	private Integer freeRam;
 	private Integer ram;
-	public EventsManager events;
+	private EventsManager events;
 	
 	private CommandManager commandManager;
 	private CacheManager cacheManager;
@@ -128,6 +128,10 @@ public class Node extends SpartanNode{
 	@Override
 	public SpartanGame getGameManager() {
 		return this.gameManager;
+	}
+
+	public EventsManager getEventsManager() {
+		return this.events;
 	}
 	
 }
