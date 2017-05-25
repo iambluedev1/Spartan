@@ -1,6 +1,6 @@
 package fr.iambluedev.spartan.api.cache;
 
-public abstract class SpartanGameCache {
+public class SpartanGameCache {
 
 	private String jsonUrl;
 	

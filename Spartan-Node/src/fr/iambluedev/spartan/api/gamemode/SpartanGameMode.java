@@ -6,8 +6,6 @@ public abstract class SpartanGameMode {
 	
 	public abstract String getName();
 	
-	public abstract String getVersion();
-	
 	public abstract SpartanGameCache getCache();
 	
 }
