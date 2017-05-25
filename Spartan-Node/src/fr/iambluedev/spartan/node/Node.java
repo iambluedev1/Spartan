@@ -7,11 +7,16 @@ import java.util.logging.Logger;
 import fr.iambluedev.spartan.api.cache.SpartanCache;
 import fr.iambluedev.spartan.api.command.SpartanDispatcher;
 import fr.iambluedev.spartan.api.gamemode.SpartanGame;
+import fr.iambluedev.spartan.api.gamemode.SpartanGameMode;
 import fr.iambluedev.spartan.api.gson.JSONObject;
+import fr.iambluedev.spartan.api.gson.parser.JSONParser;
+import fr.iambluedev.spartan.api.gson.parser.ParseException;
 import fr.iambluedev.spartan.api.node.SpartanNode;
 import fr.iambluedev.spartan.node.command.ListGameModeCommand;
 import fr.iambluedev.spartan.node.command.StopCommand;
-import fr.iambluedev.spartan.node.configs.Config;
+import fr.iambluedev.spartan.node.configs.GeneralConfig;
+import fr.iambluedev.spartan.node.gamemode.GameMode;
+import fr.iambluedev.spartan.node.configs.GameModeConfig;
 import fr.iambluedev.spartan.node.logger.SpartanLogger;
 import fr.iambluedev.spartan.node.managers.CacheManager;
 import fr.iambluedev.spartan.node.managers.CommandManager;
@@ -33,7 +38,8 @@ public class Node extends SpartanNode{
 	private CacheManager cacheManager;
 	private GameModeManager gameManager;
 	
-	private Config config;
+	private GeneralConfig config;
+	private GameModeConfig gamemode;
 	
 	public Node(){
 		this.isRunning = false;
@@ -45,7 +51,6 @@ public class Node extends SpartanNode{
 		
 		this.logger = new SpartanLogger("Node", this.log.getPath());
 		
-		this.getLogger().log(Level.INFO, "Starting SpartanNode");
 		this.getLogger().log(Level.INFO, "Enabled SpartanNode version " + this.getVersion());
 		this.getLogger().log(Level.INFO, "2017 - iambluedev - all Rights reserved");
 		
@@ -57,22 +62,33 @@ public class Node extends SpartanNode{
 		this.commandManager.addCommand("stop", new StopCommand());
 		this.commandManager.addCommand("listgm", new ListGameModeCommand());
 		
-		this.config = new Config(this);
-		this.getLogger().log(Level.INFO, "Config file succesfully loaded");
+		this.config = new GeneralConfig(this);
+		this.gamemode = new GameModeConfig(this);
+		
 		JSONObject jsonObj = (JSONObject) this.getConfig().getJsonObject().get("node");
 		this.name = (String) jsonObj.get("name");
-		this.id = ((Long) jsonObj.get("id")).intValue();
-		this.ram = ((Long) jsonObj.get("ram")).intValue();
+		this.id = Integer.valueOf(jsonObj.get("id") + "");
+		this.ram = Integer.valueOf(jsonObj.get("ram") + "");
 		this.freeRam = ram;
 		this.getLogger().log(Level.INFO, "Node specs : ");
 		this.getLogger().log(Level.INFO, "name: " + this.name);
 		this.getLogger().log(Level.INFO, "id: " + this.id);
 		this.getLogger().log(Level.INFO, "ram: " + this.ram);
 		this.getLogger().log(Level.INFO, "freeram: " + this.freeRam);
+		
+		JSONObject gmsObj = (JSONObject) this.getGamemode().getJsonObject();
+		for(Object obj : gmsObj.keySet()){
+			JSONObject gm = (JSONObject) this.getGamemode().getJsonObject().get(obj);
+			String gName = (String) gm.get("name");
+			GameMode sGm = new GameMode(gName);
+			this.cacheManager.addGameMode(gName, sGm.getCache());
+			this.getLogger().log(Level.INFO, "Added " + gName + " gamemode !");
+		}
 	}
 
 	@Override
 	public void start() {
+		this.getLogger().log(Level.INFO, "Starting SpartanNode");
 		this.isRunning = true;
 	}
 
@@ -163,7 +179,11 @@ public class Node extends SpartanNode{
 		return this.events;
 	}
 
-	public Config getConfig() {
+	public GeneralConfig getConfig() {
 		return this.config;
+	}
+
+	public GameModeConfig getGamemode() {
+		return this.gamemode;
 	}
 }
