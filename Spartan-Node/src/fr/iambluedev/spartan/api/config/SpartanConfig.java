@@ -1,12 +1,12 @@
 package fr.iambluedev.spartan.api.config;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -28,6 +28,9 @@ public abstract class SpartanConfig {
 	public SpartanConfig(String name, SpartanNode instance){
 		this.name = name;
 		this.instance = instance;
+		
+		this.instance.getLogger().log(Level.INFO, "Initialising " + this.getName() + " file");
+		
 		this.folder = new File("configs");
 		this.file = new File(folder, this.name + ".json");
 		
@@ -47,20 +50,13 @@ public abstract class SpartanConfig {
 				e.printStackTrace();
 			}
 		}else{
-			try(BufferedReader br = new BufferedReader(new FileReader(this.file))) {
-				this.instance.getLogger().log(Level.INFO, "Loading " + this.getName() + " file");
-			    StringBuilder sb = new StringBuilder();
-			    String line = br.readLine();
-			    while (line != null) {
-			        sb.append(line);
-			        sb.append(System.lineSeparator());
-			        line = br.readLine();
-			    }
-			    this.jsonObject = (JSONObject) jsonParser.parse(sb.toString());
-			} catch (IOException | ParseException e1) {
+			try {
+				this.jsonObject = (JSONObject) jsonParser.parse(new InputStreamReader(new FileInputStream(this.file)));
+				this.instance.getLogger().log(Level.INFO, this.getName() + " file succesfully loaded");
+			} catch (IOException | ParseException e) {
 				this.instance.getLogger().log(Level.SEVERE, "Error when loading the " + this.getName() + " file");
-				e1.printStackTrace();
-			} 
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -85,6 +81,7 @@ public abstract class SpartanConfig {
 	public void save(){
 		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file), "utf-8"))) {
 			writer.write(this.jsonObject.toJSONString());
+			this.instance.getLogger().log(Level.INFO, "File " + this.getName() + " successfully created");
 		} catch (UnsupportedEncodingException e) {
 			this.instance.getLogger().log(Level.SEVERE, "Error when saving the " + this.getName() + " file");
 			e.printStackTrace();
