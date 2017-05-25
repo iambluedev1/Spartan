@@ -1,22 +1,18 @@
 package fr.iambluedev.spartan.node.configs;
 
-import java.util.logging.Level;
-
 import fr.iambluedev.spartan.api.config.SpartanConfig;
 import fr.iambluedev.spartan.api.gson.JSONObject;
 import fr.iambluedev.spartan.api.node.SpartanNode;
 
-public class Config extends SpartanConfig{
+public class GeneralConfig extends SpartanConfig{
 
-	public Config(SpartanNode instance) {
+	public GeneralConfig(SpartanNode instance) {
 		super("config", instance);
-		instance.getLogger().log(Level.INFO, "Initialising config file");
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setupConfig() {
-		this.getInstance().getLogger().log(Level.INFO, "Creating config file");
 		JSONObject nodeObj = new JSONObject();
 		nodeObj.put("id", (Integer) 0);
 		nodeObj.put("name", "nodegame-1");
