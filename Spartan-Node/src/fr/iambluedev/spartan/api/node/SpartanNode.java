@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import fr.iambluedev.spartan.api.cache.SpartanCache;
 import fr.iambluedev.spartan.api.command.SpartanDispatcher;
+import fr.iambluedev.spartan.api.gamemode.SpartanGame;
 import fr.iambluedev.spartan.api.utils.Preconditions;
 
 public abstract class SpartanNode {
@@ -30,6 +31,8 @@ public abstract class SpartanNode {
 	public abstract SpartanDispatcher getCommandManager();
 	
 	public abstract SpartanCache getCacheManager();
+	
+	public abstract SpartanGame getGameManager();
 	
 	public abstract boolean isRunning();
 	

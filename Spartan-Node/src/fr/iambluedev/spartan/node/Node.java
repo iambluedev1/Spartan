@@ -7,12 +7,15 @@ import java.util.logging.Logger;
 
 import fr.iambluedev.spartan.api.cache.SpartanCache;
 import fr.iambluedev.spartan.api.command.SpartanDispatcher;
+import fr.iambluedev.spartan.api.gamemode.SpartanGame;
 import fr.iambluedev.spartan.api.node.SpartanNode;
+import fr.iambluedev.spartan.node.command.ListGameModeCommand;
 import fr.iambluedev.spartan.node.command.StopCommand;
 import fr.iambluedev.spartan.node.logger.SpartanLogger;
 import fr.iambluedev.spartan.node.managers.CacheManager;
 import fr.iambluedev.spartan.node.managers.CommandManager;
 import fr.iambluedev.spartan.node.managers.EventsManager;
+import fr.iambluedev.spartan.node.managers.GameModeManager;
 
 public class Node extends SpartanNode{
 
@@ -22,8 +25,10 @@ public class Node extends SpartanNode{
 	private Integer freeRam;
 	private Integer ram;
 	public EventsManager events;
+	
 	private CommandManager commandManager;
 	private CacheManager cacheManager;
+	private GameModeManager gameManager;
 	
 	public Node(){
 		this.isRunning = false;
@@ -32,11 +37,16 @@ public class Node extends SpartanNode{
 		if(!parent.exists()){
 			parent.mkdir();
 		}
+		
 		this.logger = new SpartanLogger("Node", this.log.getPath());
-		this.commandManager = new CommandManager();
-		this.commandManager.addCommand("stop", new StopCommand());
+		
 		this.events = new EventsManager();
 		this.cacheManager = new CacheManager();
+		this.gameManager = new GameModeManager();
+		
+		this.commandManager = new CommandManager();
+		this.commandManager.addCommand("stop", new StopCommand());
+		this.commandManager.addCommand("listgm", new ListGameModeCommand());
 	
 	}
 
@@ -113,6 +123,11 @@ public class Node extends SpartanNode{
 	@Override
 	public Integer getUsedRam() {
 		return this.ram;
+	}
+
+	@Override
+	public SpartanGame getGameManager() {
+		return this.gameManager;
 	}
 	
 }
