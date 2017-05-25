@@ -5,21 +5,25 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fr.iambluedev.spartan.api.cache.SpartanCache;
 import fr.iambluedev.spartan.api.command.SpartanDispatcher;
 import fr.iambluedev.spartan.api.node.SpartanNode;
 import fr.iambluedev.spartan.node.command.StopCommand;
 import fr.iambluedev.spartan.node.logger.SpartanLogger;
+import fr.iambluedev.spartan.node.managers.CacheManager;
 import fr.iambluedev.spartan.node.managers.CommandManager;
 import fr.iambluedev.spartan.node.managers.EventsManager;
 
 public class Node extends SpartanNode{
 
-	public boolean isRunning;
+	private boolean isRunning;
 	private Logger logger;
 	private File log;
+	private Integer freeRam;
+	private Integer ram;
 	public EventsManager events;
-	
-	public CommandManager commandManager;
+	private CommandManager commandManager;
+	private CacheManager cacheManager;
 	
 	public Node(){
 		this.isRunning = false;
@@ -32,6 +36,8 @@ public class Node extends SpartanNode{
 		this.commandManager = new CommandManager();
 		this.commandManager.addCommand("stop", new StopCommand());
 		this.events = new EventsManager();
+		this.cacheManager = new CacheManager();
+	
 	}
 
 	@Override
@@ -46,7 +52,7 @@ public class Node extends SpartanNode{
 
 	@Override
 	public String getVersion() {
-		return null;
+		return Main.VERSION;
 	}
 
 	@Override
@@ -83,6 +89,30 @@ public class Node extends SpartanNode{
 
 	public File getLog() {
 		return this.log;
+	}
+
+	@Override
+	public SpartanCache getCacheManager() {
+		return this.cacheManager;
+	}
+
+	@Override
+	public boolean hasEnoughtRam(Integer ram) {
+		if(this.freeRam - ram > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	@Override
+	public Integer getFreeRam() {
+		return this.freeRam;
+	}
+
+	@Override
+	public Integer getUsedRam() {
+		return this.ram;
 	}
 	
 }

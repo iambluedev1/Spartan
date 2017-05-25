@@ -7,14 +7,18 @@ public class Main {
 
 	private static Node instance;
 	
+	public static String VERSION = "beta 1.0";
+	
 	public static void main(String[] args) {
 		instance = new Node();
-		System.out.println("Hello");
+		instance.getLogger().log(Level.INFO, "Starting SpartanNode");
+		instance.getLogger().log(Level.INFO, "Enabled SpartanNode version " + VERSION);
+		instance.getLogger().log(Level.INFO, "2017 - iambluedev - all Rights reserved");
 		Scanner scanner = new Scanner(System.in);
 		instance.start();
-		while(instance.isRunning){
+		while(instance.isRunning()){
 			String command = scanner.nextLine();
-			if(!instance.commandManager.dispatchCommand(command)){
+			if(!instance.getCommandManager().dispatchCommand(command)){
 				instance.getLogger().log(Level.WARNING, "Command not found");
 			}
 		}

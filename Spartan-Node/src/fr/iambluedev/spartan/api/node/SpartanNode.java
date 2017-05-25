@@ -3,6 +3,7 @@ package fr.iambluedev.spartan.api.node;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import fr.iambluedev.spartan.api.cache.SpartanCache;
 import fr.iambluedev.spartan.api.command.SpartanDispatcher;
 import fr.iambluedev.spartan.api.utils.Preconditions;
 
@@ -28,7 +29,15 @@ public abstract class SpartanNode {
 	
 	public abstract SpartanDispatcher getCommandManager();
 	
+	public abstract SpartanCache getCacheManager();
+	
 	public abstract boolean isRunning();
+	
+	public abstract boolean hasEnoughtRam(Integer ram);
+	
+	public abstract Integer getFreeRam();
+	
+	public abstract Integer getUsedRam();
 	
 	public static void setInstance(SpartanNode instance){
 	    Preconditions.checkNotNull(instance, "instance");
