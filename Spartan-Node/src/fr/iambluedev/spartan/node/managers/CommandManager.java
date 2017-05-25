@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import fr.iambluedev.spartan.api.command.SpartanCommand;
 import fr.iambluedev.spartan.api.command.SpartanDispatcher;
 import fr.iambluedev.spartan.node.Main;
+import fr.iambluedev.spartan.node.events.command.CommandExecutedEvent;
 
 public class CommandManager extends SpartanDispatcher{
 
@@ -50,6 +51,7 @@ public class CommandManager extends SpartanDispatcher{
 	    }
 		String[] args = Arrays.copyOfRange(split, 1, split.length);
 		Main.getInstance().getLogger().log(Level.INFO, "executed command: /" + commandName);
+		Main.getInstance().getEventsManager().getPublisher().raiseEvent(new CommandExecutedEvent(commandName));
 		command.execute(args);
 		return true;
 	}

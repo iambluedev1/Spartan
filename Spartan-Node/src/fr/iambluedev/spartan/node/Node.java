@@ -13,6 +13,8 @@ import fr.iambluedev.spartan.node.command.ListGameModeCommand;
 import fr.iambluedev.spartan.node.command.StopCommand;
 import fr.iambluedev.spartan.node.configs.GameModeConfig;
 import fr.iambluedev.spartan.node.configs.GeneralConfig;
+import fr.iambluedev.spartan.node.events.node.NodeStartEvent;
+import fr.iambluedev.spartan.node.events.node.NodeStopEvent;
 import fr.iambluedev.spartan.node.gamemode.GameMode;
 import fr.iambluedev.spartan.node.logger.SpartanLogger;
 import fr.iambluedev.spartan.node.managers.CacheManager;
@@ -87,6 +89,7 @@ public class Node extends SpartanNode{
 	public void start() {
 		this.getLogger().log(Level.INFO, "Starting SpartanNode");
 		this.isRunning = true;
+		Main.getInstance().getEventsManager().getPublisher().raiseEvent(new NodeStartEvent(this));
 	}
 
 	@Override
@@ -121,6 +124,7 @@ public class Node extends SpartanNode{
 
 	@Override
 	public void stop() {
+		 Main.getInstance().getEventsManager().getPublisher().raiseEvent(new NodeStopEvent(this));
 		 new Thread("Shutdown Thread"){
 			 @Override
 			 public void run(){
