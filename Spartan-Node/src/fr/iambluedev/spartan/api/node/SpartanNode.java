@@ -1,6 +1,5 @@
 package fr.iambluedev.spartan.api.node;
 
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import fr.iambluedev.spartan.api.cache.SpartanCache;
@@ -26,7 +25,7 @@ public abstract class SpartanNode {
 	
 	public abstract String getName();
 	
-	public abstract UUID getId();
+	public abstract Integer getId();
 	
 	public abstract SpartanDispatcher getCommandManager();
 	

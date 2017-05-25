@@ -11,9 +11,6 @@ public class Main {
 	
 	public static void main(String[] args) {
 		instance = new Node();
-		instance.getLogger().log(Level.INFO, "Starting SpartanNode");
-		instance.getLogger().log(Level.INFO, "Enabled SpartanNode version " + VERSION);
-		instance.getLogger().log(Level.INFO, "2017 - iambluedev - all Rights reserved");
 		Scanner scanner = new Scanner(System.in);
 		instance.start();
 		while(instance.isRunning()){
