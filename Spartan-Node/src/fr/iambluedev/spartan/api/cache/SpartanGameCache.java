@@ -2,14 +2,14 @@ package fr.iambluedev.spartan.api.cache;
 
 public class SpartanGameCache {
 
-	private String jsonUrl;
+	private String zipUrl;
 	
-	public SpartanGameCache(String jsonUrl){
-		this.jsonUrl = jsonUrl;
+	public SpartanGameCache(String zipUrl){
+		this.zipUrl = zipUrl;
 	}
 
-	public String getJsonUrl() {
-		return this.jsonUrl;
+	public String getZipUrl() {
+		return this.zipUrl;
 	}
 	
 }

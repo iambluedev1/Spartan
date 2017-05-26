@@ -1,5 +1,6 @@
 package fr.iambluedev.spartan.node.managers;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,9 +10,11 @@ import fr.iambluedev.spartan.api.cache.SpartanGameCache;
 public class CacheManager extends SpartanCache{
 
 	private Map<String, SpartanGameCache> gamemodes;
+	private File folder;
 	
 	public CacheManager(){
 		this.gamemodes = new HashMap<String, SpartanGameCache>();
+		this.folder = new File("cache");
 	}
 	
 	@Override
@@ -40,4 +43,8 @@ public class CacheManager extends SpartanCache{
 		}
 	}
 
+	public File getFolder() {
+		return this.folder;
+	}
+	
 }
