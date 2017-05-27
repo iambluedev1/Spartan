@@ -5,7 +5,7 @@ import java.util.logging.Level;
 
 public class Main {
 
-	private static Node instance;
+	public static Node instance;
 	
 	public static String VERSION = "beta 1.0";
 	

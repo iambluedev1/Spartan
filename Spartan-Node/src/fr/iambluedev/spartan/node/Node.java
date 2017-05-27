@@ -2,6 +2,8 @@ package fr.iambluedev.spartan.node;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +17,7 @@ import fr.iambluedev.spartan.api.gson.JSONObject;
 import fr.iambluedev.spartan.api.http.SpartanUrl;
 import fr.iambluedev.spartan.api.node.SpartanNode;
 import fr.iambluedev.spartan.api.utils.ZipExtract;
+import fr.iambluedev.spartan.node.command.CreateServerCommand;
 import fr.iambluedev.spartan.node.command.ListGameModeCommand;
 import fr.iambluedev.spartan.node.command.StopCommand;
 import fr.iambluedev.spartan.node.configs.GameModeConfig;
@@ -46,7 +49,11 @@ public class Node extends SpartanNode{
 	private GeneralConfig config;
 	private GameModeConfig gamemode;
 	
+	private List<String> cmd;
+	private String jarName;
+	
 	public Node(){
+		Main.instance = this;
 		this.isRunning = false;
 		this.log = new File("logs", "node.log");
 		File parent = new File(this.log.getParent());
@@ -66,6 +73,7 @@ public class Node extends SpartanNode{
 		this.commandManager = new CommandManager();
 		this.commandManager.addCommand("stop", new StopCommand());
 		this.commandManager.addCommand("listgm", new ListGameModeCommand());
+		this.commandManager.addCommand("createserver", new CreateServerCommand());
 		
 		this.config = new GeneralConfig(this);
 		this.gamemode = new GameModeConfig(this);
@@ -86,7 +94,8 @@ public class Node extends SpartanNode{
 			JSONObject gm = (JSONObject) this.getGamemode().getJsonObject().get(obj);
 			String gName = (String) gm.get("name");
 			String zipUrl = (String) gm.get("zipUrl");
-			GameMode sGm = new GameMode(gName, zipUrl);
+			GameMode sGm = new GameMode(gName, zipUrl, obj.toString());
+			this.gameManager.addGameMode(sGm, obj.toString());
 			this.cacheManager.addGameMode(obj.toString(), sGm);
 			this.getLogger().log(Level.INFO, "Added " + gName + " gamemode !");
 		}
@@ -102,6 +111,9 @@ public class Node extends SpartanNode{
 				e.printStackTrace();
 			}
 		}
+		
+		this.cmd = Arrays.asList(this.getConfig().getJsonObject().get("cmd").toString().split(" "));
+		this.jarName = this.getConfig().getJsonObject().get("jarName").toString();
 	}
 
 	@Override
@@ -206,4 +218,13 @@ public class Node extends SpartanNode{
 	public GameModeConfig getGamemode() {
 		return this.gamemode;
 	}
+
+	public List<String> getCmd() {
+		return this.cmd;
+	}
+
+	public String getJarName() {
+		return this.jarName;
+	}
+	
 }
