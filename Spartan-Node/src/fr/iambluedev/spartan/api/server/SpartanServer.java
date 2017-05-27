@@ -11,18 +11,20 @@ public abstract class SpartanServer {
 	private SpartanGameMode gamemode;
 	private Integer port;
 	
-	public SpartanServer(Process process, SpartanGameMode gamemode, Integer port){
-		this.process = process;
+	public SpartanServer(SpartanGameMode gamemode, Integer port){
 		this.gamemode = gamemode;
 		this.port = port;
 	}
 	
-	public SpartanServer(Process process, SpartanGameMode gamemode) throws IOException{
-		this.process = process;
+	public SpartanServer(SpartanGameMode gamemode) throws IOException{
 		this.gamemode = gamemode;
 		this.port = Ports.getRandomPort();
 	}
 
+	public void setProcess(Process process){
+		this.process = process;
+	}
+	
 	public Process getProcess() {
 		return this.process;
 	}
@@ -46,5 +48,9 @@ public abstract class SpartanServer {
 	public abstract void destroyServer();
 	
 	public abstract void createServer();
+	
+	public String getRandomName(){
+		return this.getGamemode().getCache().getName() + "_" + this.getPort();
+	}
 	
 }
