@@ -60,7 +60,7 @@ public class Node extends SpartanNode{
 		this.getLogger().log(Level.INFO, "2017 - iambluedev - all Rights reserved");
 		
 		this.events = new EventsManager();
-		this.cacheManager = new CacheManager();
+		this.cacheManager = new CacheManager(this);
 		this.gameManager = new GameModeManager();
 		
 		this.commandManager = new CommandManager();
@@ -96,6 +96,7 @@ public class Node extends SpartanNode{
 			this.getLogger().log(Level.INFO, "Updating " + gm.getValue().getName());
 			new SpartanDownload(new SpartanUrl(gm.getValue().getCache().getZipUrl(), new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), gm.getKey()), this).run();
 			try {
+				this.getLogger().log(Level.INFO, "[" + gm.getKey() + "] Extracting " + gm.getValue().getName());
 				new ZipExtract().unzip(new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), new File(this.cacheManager.getFolder(), gm.getKey()).getPath());
 			} catch (IOException e) {
 				e.printStackTrace();
