@@ -6,19 +6,25 @@ import java.util.Map;
 
 import fr.iambluedev.spartan.api.cache.SpartanCache;
 import fr.iambluedev.spartan.api.cache.SpartanGameCache;
+import fr.iambluedev.spartan.api.gamemode.SpartanGameMode;
 
 public class CacheManager extends SpartanCache{
 
-	private Map<String, SpartanGameCache> gamemodes;
+	private Map<String, SpartanGameMode> gamemodes;
 	private File folder;
 	
 	public CacheManager(){
-		this.gamemodes = new HashMap<String, SpartanGameCache>();
+		this.gamemodes = new HashMap<String, SpartanGameMode>();
 		this.folder = new File("cache");
+		if(this.folder.exists()){
+			this.folder.delete();
+		}
+		
+		this.folder.mkdir();
 	}
 	
 	@Override
-	public Map<String, SpartanGameCache> getGameModes() {
+	public Map<String, SpartanGameMode> getGameModes() {
 		return this.gamemodes;
 	}
 
@@ -30,14 +36,14 @@ public class CacheManager extends SpartanCache{
 	@Override
 	public SpartanGameCache getCache(String name) {
 		if(this.gamemodes.containsKey(name)){
-			return this.gamemodes.get(name);
+			return this.gamemodes.get(name).getCache();
 		}else{
 			return null;
 		}
 	}
 
 	@Override
-	public void addGameMode(String name, SpartanGameCache cache) {
+	public void addGameMode(String name, SpartanGameMode cache) {
 		if(!this.gamemodes.containsKey(name)){
 			this.gamemodes.put(name, cache);
 		}
