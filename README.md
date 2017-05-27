@@ -5,7 +5,7 @@ Spartan Project
 
 TodoList :
  - Jedis connection (Pub/Sub)
- - Server creator
+ - Server creator (50%)
 
  
 Features :
