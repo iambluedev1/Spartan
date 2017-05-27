@@ -18,7 +18,7 @@ public class ListGameModeCommand extends SpartanCommand{
 		Main.getInstance().getLogger().log(Level.INFO, "List of available gamemodes (" +  Main.getInstance().getGameManager().getGameModes().size() + "):");
 		StringBuilder sb = new StringBuilder();
 		for(Entry<String, SpartanGameMode> gm : Main.getInstance().getGameManager().getGameModes().entrySet()){
-			sb.append(gm.getKey());
+			sb.append(gm.getKey() + "(" + gm.getValue().getCache().getName() + "), ");
 		}
 		if(sb.length() != 0){
 			Main.getInstance().getLogger().log(Level.INFO, sb.toString());
