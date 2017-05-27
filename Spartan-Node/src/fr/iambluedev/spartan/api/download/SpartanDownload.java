@@ -7,19 +7,23 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import fr.iambluedev.spartan.api.http.SpartanUrl;
+import fr.iambluedev.spartan.api.node.SpartanNode;
 
 public class SpartanDownload extends Thread{
 
 	private SpartanUrl spartanUrl;
+	private SpartanNode instance;
 	
-	public SpartanDownload(SpartanUrl spartanUrl){
+	public SpartanDownload(SpartanUrl spartanUrl, SpartanNode instance){
 		this.spartanUrl = spartanUrl;
+		this.instance = instance;
 	}
-
+	
 	@Override
 	public void run(){
 		URL url = null;
@@ -82,15 +86,18 @@ public class SpartanDownload extends Thread{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
- 
-            System.out.println("[" + this.getSpartanUrl().getName() + "] File downloaded to : " + this.getSpartanUrl().getDest());
+            this.getInstance().getLogger().log(Level.INFO, "[" + this.getSpartanUrl().getName() + "] File downloaded to : " + this.getSpartanUrl().getDest());
         } else {
-            System.out.println("[" + this.getSpartanUrl().getName() + "] Error : Server replied HTTP code: " + responseCode);
+        	this.getInstance().getLogger().log(Level.WARNING, "[" + this.getSpartanUrl().getName() + "] Error : Server replied HTTP code: " + responseCode);
         }
         httpConn.disconnect();
 	}	
 	
 	public SpartanUrl getSpartanUrl() {
 		return this.spartanUrl;
+	}
+
+	public SpartanNode getInstance() {
+		return this.instance;
 	}
 }

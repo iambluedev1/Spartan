@@ -14,6 +14,7 @@ public class SpartanUrl {
 	public SpartanUrl(String url, String dest, String name){
 		this.url = url;
 		this.dest = dest;
+		this.name = name;
 	}
 
 	public String getUrl() {
