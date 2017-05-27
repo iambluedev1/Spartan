@@ -6,7 +6,7 @@ Spartan Project
 TodoList :
  - Jedis connection (Pub/Sub)
  - Server creator
- - GameMode Cache (50% -> download)
+
  
 Features :
  - command sys
@@ -15,5 +15,5 @@ Features :
  - config sys
  - download sys
  - gamemode sys
- 
+ - GameMode Cache (50% -> download)
  
