@@ -27,6 +27,14 @@ public class GameModeManager extends SpartanGame{
 	}
 	
 	@Override
+	public SpartanGameMode getGameMode(String name){
+		if(this.gamemodes.containsKey(name)){
+			return this.gamemodes.get(name);
+		}
+		return null;
+	}
+	
+	@Override
 	public void removeGamemode(String name){
 		if(this.gamemodes.containsKey(name)){
 			this.gamemodes.remove(name);

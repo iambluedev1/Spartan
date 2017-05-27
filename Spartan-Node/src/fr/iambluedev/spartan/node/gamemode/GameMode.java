@@ -8,9 +8,9 @@ public class GameMode extends SpartanGameMode{
 	private String name;
 	private SpartanGameCache cache;
 	
-	public GameMode(String name, String zipUrl){
+	public GameMode(String name, String zipUrl, String dName){
 		this.name = name;
-		this.cache = new SpartanGameCache(zipUrl);
+		this.cache = new SpartanGameCache(zipUrl, dName);
 	}
 	
 	@Override
