@@ -1,18 +1,20 @@
 package fr.iambluedev.spartan.node;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.iambluedev.spartan.api.cache.SpartanCache;
-import fr.iambluedev.spartan.api.cache.SpartanGameCache;
 import fr.iambluedev.spartan.api.command.SpartanDispatcher;
 import fr.iambluedev.spartan.api.download.SpartanDownload;
 import fr.iambluedev.spartan.api.gamemode.SpartanGame;
+import fr.iambluedev.spartan.api.gamemode.SpartanGameMode;
 import fr.iambluedev.spartan.api.gson.JSONObject;
 import fr.iambluedev.spartan.api.http.SpartanUrl;
 import fr.iambluedev.spartan.api.node.SpartanNode;
+import fr.iambluedev.spartan.api.utils.ZipExtract;
 import fr.iambluedev.spartan.node.command.ListGameModeCommand;
 import fr.iambluedev.spartan.node.command.StopCommand;
 import fr.iambluedev.spartan.node.configs.GameModeConfig;
@@ -85,14 +87,19 @@ public class Node extends SpartanNode{
 			String gName = (String) gm.get("name");
 			String zipUrl = (String) gm.get("zipUrl");
 			GameMode sGm = new GameMode(gName, zipUrl);
-			this.cacheManager.addGameMode(gName, sGm.getCache());
+			this.cacheManager.addGameMode(obj.toString(), sGm);
 			this.getLogger().log(Level.INFO, "Added " + gName + " gamemode !");
 		}
 		
 		this.getLogger().log(Level.INFO, "Preparing to update cache");
-		for(Entry<String, SpartanGameCache> gm : this.cacheManager.getGameModes().entrySet()){
-			this.getLogger().log(Level.INFO, "Updating " + gm.getKey() + gm.getValue().getZipUrl());
-			new SpartanDownload(new SpartanUrl(gm.getValue().getZipUrl(), new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), gm.getKey())).run();
+		for(Entry<String, SpartanGameMode> gm : this.cacheManager.getGameModes().entrySet()){
+			this.getLogger().log(Level.INFO, "Updating " + gm.getValue().getName());
+			new SpartanDownload(new SpartanUrl(gm.getValue().getCache().getZipUrl(), new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), gm.getKey()), this).run();
+			try {
+				new ZipExtract().unzip(new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), new File(this.cacheManager.getFolder(), gm.getKey()).getPath());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
