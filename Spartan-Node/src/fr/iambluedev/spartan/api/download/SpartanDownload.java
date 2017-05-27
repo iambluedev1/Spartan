@@ -48,6 +48,7 @@ public class SpartanDownload extends Thread{
 		}
  
         if (responseCode == HttpURLConnection.HTTP_OK) {
+        	this.getInstance().getLogger().log(Level.INFO, "[" + this.getSpartanUrl().getName() + "]  Downloading zipFile");
             InputStream inputStream = null;
 			try {
 				inputStream = httpConn.getInputStream();
