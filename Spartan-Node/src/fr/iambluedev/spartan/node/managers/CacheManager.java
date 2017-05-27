@@ -47,11 +47,11 @@ public class CacheManager extends SpartanCache{
 			return null;
 		}
 	}
-
+	
 	@Override
-	public void addGameMode(String name, SpartanGameMode cache) {
+	public void addGameMode(String name, SpartanGameMode gamemode) {
 		if(!this.gamemodes.containsKey(name)){
-			this.gamemodes.put(name, cache);
+			this.gamemodes.put(name, gamemode);
 		}
 	}
 

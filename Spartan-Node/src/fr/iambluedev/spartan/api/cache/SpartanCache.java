@@ -10,7 +10,7 @@ public abstract class SpartanCache {
 	
 	public abstract SpartanGameCache getCache(String name);
 	
-	public abstract void addGameMode(String name, SpartanGameMode cache);
+	public abstract void addGameMode(String name, SpartanGameMode gamemode);
 	
 	public abstract void clearCache();
 }
