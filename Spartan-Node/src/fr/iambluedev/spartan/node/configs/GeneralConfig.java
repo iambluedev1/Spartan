@@ -24,6 +24,8 @@ public class GeneralConfig extends SpartanConfig{
 		redisObj.put("port", 6379);
 		redisObj.put("password", "mypassword");
 		this.getJsonObject().put("redis", redisObj);
+		this.getJsonObject().put("cmd", "java -jar {jarFile} --port={port}");
+		this.getJsonObject().put("jarName", "spigot.jar");
 		this.save();
 	}
 
