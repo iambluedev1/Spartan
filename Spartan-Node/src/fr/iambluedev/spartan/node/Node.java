@@ -1,16 +1,21 @@
 package fr.iambluedev.spartan.node;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.iambluedev.spartan.api.cache.SpartanCache;
 import fr.iambluedev.spartan.api.command.SpartanDispatcher;
+import fr.iambluedev.spartan.api.download.SpartanDownload;
 import fr.iambluedev.spartan.api.gamemode.SpartanGame;
+import fr.iambluedev.spartan.api.gamemode.SpartanGameMode;
 import fr.iambluedev.spartan.api.gson.JSONObject;
+import fr.iambluedev.spartan.api.http.SpartanUrl;
 import fr.iambluedev.spartan.api.node.SpartanNode;
 import fr.iambluedev.spartan.api.server.SpartanServer;
+import fr.iambluedev.spartan.api.utils.ZipExtract;
 import fr.iambluedev.spartan.node.command.CreateServerCommand;
 import fr.iambluedev.spartan.node.command.DestroyServerCommand;
 import fr.iambluedev.spartan.node.command.ListGameModeCommand;
@@ -102,7 +107,7 @@ public class Node extends SpartanNode{
 			this.getLogger().log(Level.INFO, "Added " + gName + " gamemode ! (" + obj.toString() + ")");
 		}
 		
-		/*this.getLogger().log(Level.INFO, "Preparing to update cache");
+		this.getLogger().log(Level.INFO, "Preparing to update cache");
 		for(Entry<String, SpartanGameMode> gm : this.cacheManager.getGameModes().entrySet()){
 			this.getLogger().log(Level.INFO, "Updating " + gm.getValue().getName());
 			new SpartanDownload(new SpartanUrl(gm.getValue().getCache().getZipUrl(), new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), gm.getKey()), this).run();
@@ -112,7 +117,7 @@ public class Node extends SpartanNode{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}*/
+		}
 		
 		this.cmd = (String) this.getConfig().getJsonObject().get("cmd");
 		this.jarName = this.getConfig().getJsonObject().get("jarName").toString();

@@ -21,12 +21,12 @@ public class CacheManager extends SpartanCache{
 		this.gamemodes = new HashMap<String, SpartanGameMode>();
 		this.folder = new File("cache");
 		this.instance = instance;
-		/*if(this.folder.exists()){
+		if(this.folder.exists()){
 			this.instance.getLogger().log(Level.INFO, "Deleting cache folder");
 			IOUtils.deleteDir(this.folder);
 		}
 		
-		this.folder.mkdir();*/
+		this.folder.mkdir();
 	}
 	
 	@Override
