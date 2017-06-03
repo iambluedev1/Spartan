@@ -37,7 +37,7 @@ public abstract class SpartanServer {
 		return this.port;
 	}
 
-	public abstract void startServer();
+	public abstract void startServer() throws Exception;
 	
 	public abstract void stopServer();
 	
@@ -48,6 +48,8 @@ public abstract class SpartanServer {
 	public abstract void destroyServer();
 	
 	public abstract void createServer();
+	
+	public abstract String getName();
 	
 	public String getRandomName(){
 		return this.getGamemode().getCache().getName() + "_" + this.getPort();

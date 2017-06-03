@@ -1,12 +1,14 @@
 package fr.iambluedev.spartan.node.server;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStreamReader;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import fr.iambluedev.spartan.api.gamemode.SpartanGameMode;
-import fr.iambluedev.spartan.api.node.SpartanNode;
 import fr.iambluedev.spartan.api.server.SpartanServer;
 import fr.iambluedev.spartan.api.utils.IOUtils;
 import fr.iambluedev.spartan.api.utils.Ports;
@@ -37,6 +39,9 @@ public class Server extends SpartanServer{
 		super(gamemode);
 		this.name = this.getRandomName();
 		this.folder = new File("servers", this.name);
+		if(!new File("servers").exists()){
+			new File("servers").mkdir();
+		}
 		if(this.folder.exists()){
 			System.out.println("Deleting" + this.name + "server folder");
 			IOUtils.deleteDir(this.folder);
@@ -63,16 +68,34 @@ public class Server extends SpartanServer{
 	}
 
 	@Override
-	public void startServer() {
-		List<String> params = Main.getInstance().getCmd();
-		for(String param : params){
-			if(param.equals("{port}")) param.replace("{port}", this.getPort() + "");
-			if(param.equals("{jarFile}")) param.replace("{jarFile}", this.getPort() + "");
-		}
+	public void startServer() throws Exception {
+		String params = Main.getInstance().getCmd();
+		params = params.replace("{port}", this.getPort() + "").replace("{jarFile}", Main.getInstance().getJarName() + "");
+		
 		ProcessBuilder processBuilder = new ProcessBuilder();
+		processBuilder.command(params.split(" "));
+		processBuilder.directory(this.folder);
+		//processBuilder.redirectOutput(Redirect.INHERIT);
+		//processBuilder.redirectError(Redirect.INHERIT);
+		
+		Main.getInstance().getLogger().log(Level.INFO, "[" + this.getName() + "] Starting server");
+		Process process = processBuilder.start();
+		this.setProcess(process);
+		BufferedReader output = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		String ligne = "";
+		while ((ligne = output.readLine()) != null) {
+		    if(ligne.contains("Done")){
+		    	String regex = "Done \\([0-9a-zA-z-,]+s\\)! For help, type \"help\" or \"\\?\"";
+				Pattern pattern = Pattern.compile(regex);
+				Matcher matcher = pattern.matcher(ligne);
+				Main.getInstance().getLogger().log(Level.INFO, "[" + this.getName() + "] Started in " + ligne.replace(matcher.replaceAll(""), "").replace("(", "").replace(")", "").replace("! For help, type \"help\" or \"?\"", "").replaceAll("Done", "").replaceAll(" ", ""));
+				break;
+		    }
+		}
 		Main.getInstance().getEventsManager().getPublisher().raiseEvent(new ServerStartEvent(this));
 	}
 
+	@Override
 	public String getName() {
 		return this.name;
 	}
