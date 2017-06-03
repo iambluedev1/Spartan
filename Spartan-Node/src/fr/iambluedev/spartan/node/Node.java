@@ -108,7 +108,7 @@ public class Node extends SpartanNode{
 			this.getLogger().log(Level.INFO, "Added " + gName + " gamemode ! (" + obj.toString() + ")");
 		}
 		
-		/*this.getLogger().log(Level.INFO, "Preparing to update cache");
+		this.getLogger().log(Level.INFO, "Preparing to update cache");
 		for(Entry<String, SpartanGameMode> gm : this.cacheManager.getGameModes().entrySet()){
 			this.getLogger().log(Level.INFO, "Updating " + gm.getValue().getName());
 			new SpartanDownload(new SpartanUrl(gm.getValue().getCache().getZipUrl(), new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), gm.getKey()), this).run();
@@ -118,7 +118,7 @@ public class Node extends SpartanNode{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}*/
+		}
 		
 		this.cmd = (String) this.getConfig().getJsonObject().get("cmd");
 		this.jarName = this.getConfig().getJsonObject().get("jarName").toString();
