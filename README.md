@@ -5,6 +5,10 @@ Spartan Project
 
 TodoList :
  - Jedis connection (Pub/Sub)
+<<<<<<< HEAD
+=======
+
+>>>>>>> branch 'master' of https://iambluedev@gitlab.com/iambluedev/Spartan.git
  
 Features :
  - command sys
