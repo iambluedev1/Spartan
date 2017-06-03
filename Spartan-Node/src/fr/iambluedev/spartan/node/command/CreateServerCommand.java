@@ -1,6 +1,5 @@
 package fr.iambluedev.spartan.node.command;
 
-import java.io.IOException;
 import java.util.logging.Level;
 
 import fr.iambluedev.spartan.api.command.SpartanCommand;
@@ -24,9 +23,16 @@ public class CreateServerCommand extends SpartanCommand{
 				Main.getInstance().getLogger().log(Level.INFO, "Selected gamemode : " + gm.getName());
 				try {
 					SpartanServer server = new Server(gm);
-				} catch (IOException e) {
+					Main.getInstance().getLogger().log(Level.INFO, "Selected server : " + server.getName());
+					Main.getInstance().getLogger().log(Level.INFO, "[" + server.getName() + "] Copying server datas");
+					Main.getInstance().getServerManager().addServer(server.getName(), server);
+					server.createServer();
+					Main.getInstance().getLogger().log(Level.INFO, "[" + server.getName() + "] Server datas copied !");
+					server.startServer();
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				
 			}else{
 				Main.getInstance().getLogger().log(Level.WARNING, "Wrong gamemode");
 			}
