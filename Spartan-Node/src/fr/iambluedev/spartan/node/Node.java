@@ -101,13 +101,14 @@ public class Node extends SpartanNode{
 			JSONObject gm = (JSONObject) this.getGamemode().getJsonObject().get(obj);
 			String gName = (String) gm.get("name");
 			String zipUrl = (String) gm.get("zipUrl");
-			GameMode sGm = new GameMode(gName, zipUrl, obj.toString());
+			Integer usedRam = Integer.valueOf(gm.get("usedRam") + "");
+			GameMode sGm = new GameMode(gName, zipUrl, obj.toString(), usedRam);
 			this.gameManager.addGameMode(sGm, obj.toString());
 			this.cacheManager.addGameMode(obj.toString(), sGm);
 			this.getLogger().log(Level.INFO, "Added " + gName + " gamemode ! (" + obj.toString() + ")");
 		}
 		
-		this.getLogger().log(Level.INFO, "Preparing to update cache");
+		/*this.getLogger().log(Level.INFO, "Preparing to update cache");
 		for(Entry<String, SpartanGameMode> gm : this.cacheManager.getGameModes().entrySet()){
 			this.getLogger().log(Level.INFO, "Updating " + gm.getValue().getName());
 			new SpartanDownload(new SpartanUrl(gm.getValue().getCache().getZipUrl(), new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), gm.getKey()), this).run();
@@ -117,7 +118,7 @@ public class Node extends SpartanNode{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 		
 		this.cmd = (String) this.getConfig().getJsonObject().get("cmd");
 		this.jarName = this.getConfig().getJsonObject().get("jarName").toString();

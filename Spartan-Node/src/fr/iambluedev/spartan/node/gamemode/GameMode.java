@@ -7,10 +7,12 @@ public class GameMode extends SpartanGameMode{
 
 	private String name;
 	private SpartanGameCache cache;
+	private Integer usedRam;
 	
-	public GameMode(String name, String zipUrl, String dName){
+	public GameMode(String name, String zipUrl, String dName, Integer usedRam){
 		this.name = name;
 		this.cache = new SpartanGameCache(zipUrl, dName);
+		this.usedRam = usedRam;
 	}
 	
 	@Override
@@ -21,6 +23,11 @@ public class GameMode extends SpartanGameMode{
 	@Override
 	public SpartanGameCache getCache() {
 		return this.cache;
+	}
+
+	@Override
+	public Integer getUsedRam() {
+		return this.usedRam;
 	}
 
 }

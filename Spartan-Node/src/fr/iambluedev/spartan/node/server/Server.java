@@ -70,7 +70,7 @@ public class Server extends SpartanServer{
 	@Override
 	public void startServer() throws Exception {
 		String params = Main.getInstance().getCmd();
-		params = params.replace("{port}", this.getPort() + "").replace("{jarFile}", Main.getInstance().getJarName() + "");
+		params = params.replace("{port}", this.getPort() + "").replace("{jarFile}", Main.getInstance().getJarName() + "").replace("{ram}", this.getGamemode().getUsedRam() + "");
 		
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		processBuilder.command(params.split(" "));

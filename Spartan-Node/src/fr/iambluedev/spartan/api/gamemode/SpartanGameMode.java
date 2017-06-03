@@ -6,6 +6,8 @@ public abstract class SpartanGameMode {
 	
 	public abstract String getName();
 	
+	public abstract Integer getUsedRam();
+	
 	public abstract SpartanGameCache getCache();
 	
 }
