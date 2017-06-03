@@ -1,24 +1,20 @@
 package fr.iambluedev.spartan.node;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.iambluedev.spartan.api.cache.SpartanCache;
 import fr.iambluedev.spartan.api.command.SpartanDispatcher;
-import fr.iambluedev.spartan.api.download.SpartanDownload;
 import fr.iambluedev.spartan.api.gamemode.SpartanGame;
-import fr.iambluedev.spartan.api.gamemode.SpartanGameMode;
 import fr.iambluedev.spartan.api.gson.JSONObject;
-import fr.iambluedev.spartan.api.http.SpartanUrl;
 import fr.iambluedev.spartan.api.node.SpartanNode;
-import fr.iambluedev.spartan.api.utils.ZipExtract;
+import fr.iambluedev.spartan.api.server.SpartanServer;
 import fr.iambluedev.spartan.node.command.CreateServerCommand;
+import fr.iambluedev.spartan.node.command.DestroyServerCommand;
 import fr.iambluedev.spartan.node.command.ListGameModeCommand;
+import fr.iambluedev.spartan.node.command.ListServerCommand;
 import fr.iambluedev.spartan.node.command.StopCommand;
 import fr.iambluedev.spartan.node.configs.GameModeConfig;
 import fr.iambluedev.spartan.node.configs.GeneralConfig;
@@ -30,6 +26,7 @@ import fr.iambluedev.spartan.node.managers.CacheManager;
 import fr.iambluedev.spartan.node.managers.CommandManager;
 import fr.iambluedev.spartan.node.managers.EventsManager;
 import fr.iambluedev.spartan.node.managers.GameModeManager;
+import fr.iambluedev.spartan.node.managers.ServerManager;
 
 public class Node extends SpartanNode{
 
@@ -45,11 +42,12 @@ public class Node extends SpartanNode{
 	private CommandManager commandManager;
 	private CacheManager cacheManager;
 	private GameModeManager gameManager;
+	private ServerManager serverManager;
 	
 	private GeneralConfig config;
 	private GameModeConfig gamemode;
 	
-	private List<String> cmd;
+	private String cmd;
 	private String jarName;
 	
 	public Node(){
@@ -73,10 +71,14 @@ public class Node extends SpartanNode{
 		this.commandManager = new CommandManager();
 		this.commandManager.addCommand("stop", new StopCommand());
 		this.commandManager.addCommand("listgm", new ListGameModeCommand());
+		this.commandManager.addCommand("listserver", new ListServerCommand());
 		this.commandManager.addCommand("createserver", new CreateServerCommand());
+		this.commandManager.addCommand("destroyserver", new DestroyServerCommand());
 		
 		this.config = new GeneralConfig(this);
 		this.gamemode = new GameModeConfig(this);
+		
+		this.serverManager = new ServerManager(this);
 		
 		JSONObject jsonObj = (JSONObject) this.getConfig().getJsonObject().get("node");
 		this.name = (String) jsonObj.get("name");
@@ -97,10 +99,10 @@ public class Node extends SpartanNode{
 			GameMode sGm = new GameMode(gName, zipUrl, obj.toString());
 			this.gameManager.addGameMode(sGm, obj.toString());
 			this.cacheManager.addGameMode(obj.toString(), sGm);
-			this.getLogger().log(Level.INFO, "Added " + gName + " gamemode !");
+			this.getLogger().log(Level.INFO, "Added " + gName + " gamemode ! (" + obj.toString() + ")");
 		}
 		
-		this.getLogger().log(Level.INFO, "Preparing to update cache");
+		/*this.getLogger().log(Level.INFO, "Preparing to update cache");
 		for(Entry<String, SpartanGameMode> gm : this.cacheManager.getGameModes().entrySet()){
 			this.getLogger().log(Level.INFO, "Updating " + gm.getValue().getName());
 			new SpartanDownload(new SpartanUrl(gm.getValue().getCache().getZipUrl(), new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), gm.getKey()), this).run();
@@ -110,9 +112,9 @@ public class Node extends SpartanNode{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 		
-		this.cmd = Arrays.asList(this.getConfig().getJsonObject().get("cmd").toString().split(" "));
+		this.cmd = (String) this.getConfig().getJsonObject().get("cmd");
 		this.jarName = this.getConfig().getJsonObject().get("jarName").toString();
 	}
 
@@ -160,6 +162,10 @@ public class Node extends SpartanNode{
 			 @Override
 			 public void run(){
 				 Node.this.isRunning = false;
+				 for(Entry<String, SpartanServer> server : Node.this.serverManager.getServers().entrySet()){
+					 server.getValue().killProcess();
+					 server.getValue().destroyServer();
+				 }
 				 Node.this.getLogger().log(Level.INFO, "Stopping node");
 				 System.exit(0);
 			 }
@@ -219,12 +225,15 @@ public class Node extends SpartanNode{
 		return this.gamemode;
 	}
 
-	public List<String> getCmd() {
+	public String getCmd() {
 		return this.cmd;
 	}
 
 	public String getJarName() {
 		return this.jarName;
 	}
-	
+
+	public ServerManager getServerManager() {
+		return this.serverManager;
+	}
 }

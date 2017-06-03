@@ -13,6 +13,13 @@ public class Main {
 		instance = new Node();
 		Scanner scanner = new Scanner(System.in);
 		instance.start();
+		
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+		    public void run() {
+		    	instance.stop();
+		    }
+		});
+		
 		while(instance.isRunning()){
 			String command = scanner.nextLine();
 			if(!instance.getCommandManager().dispatchCommand(command)){
