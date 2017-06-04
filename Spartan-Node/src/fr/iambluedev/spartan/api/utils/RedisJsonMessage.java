@@ -20,8 +20,8 @@ public class RedisJsonMessage {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public RedisJsonMessage setMessage(String message){
-		this.jsonObj.put("message", message);
+	public RedisJsonMessage setContent(String content){
+		this.jsonObj.put("content", content);
 		return this;
 	}
 	

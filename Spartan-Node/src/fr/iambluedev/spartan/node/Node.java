@@ -176,7 +176,7 @@ public class Node extends SpartanNode{
 		Node.this.getRedis().get(new Callback<Jedis>() {
 			@Override
 			public void call(Jedis jedis) {
-				jedis.publish("node", new RedisJsonMessage().setCmd("started").setMessage("Node started !").get());
+				jedis.publish("node", new RedisJsonMessage().setCmd("started").setContent("Node started !").get());
 			}
 		});
 	}
@@ -225,7 +225,7 @@ public class Node extends SpartanNode{
 				 Node.this.getRedis().get(new Callback<Jedis>() {
 						@Override
 						public void call(Jedis jedis) {
-							jedis.publish("node", new RedisJsonMessage().setCmd("stoped").setMessage("Node stoped !").get());
+							jedis.publish("node", new RedisJsonMessage().setCmd("stoped").setContent("Node stoped !").get());
 							jedis.hdel("nodes", Node.this.getName() + "-" + Node.this.getId());
 						}
 					});
