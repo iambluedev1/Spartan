@@ -1,16 +1,23 @@
 package fr.iambluedev.spartan.node;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map.Entry;
+import java.util.Timer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.iambluedev.spartan.api.cache.SpartanCache;
 import fr.iambluedev.spartan.api.command.SpartanDispatcher;
+import fr.iambluedev.spartan.api.download.SpartanDownload;
 import fr.iambluedev.spartan.api.gamemode.SpartanGame;
+import fr.iambluedev.spartan.api.gamemode.SpartanGameMode;
 import fr.iambluedev.spartan.api.gson.JSONObject;
+import fr.iambluedev.spartan.api.http.SpartanUrl;
 import fr.iambluedev.spartan.api.node.SpartanNode;
 import fr.iambluedev.spartan.api.server.SpartanServer;
+import fr.iambluedev.spartan.api.utils.Callback;
+import fr.iambluedev.spartan.api.utils.ZipExtract;
 import fr.iambluedev.spartan.node.command.CreateServerCommand;
 import fr.iambluedev.spartan.node.command.DestroyServerCommand;
 import fr.iambluedev.spartan.node.command.ListGameModeCommand;
@@ -27,8 +34,10 @@ import fr.iambluedev.spartan.node.managers.CommandManager;
 import fr.iambluedev.spartan.node.managers.EventsManager;
 import fr.iambluedev.spartan.node.managers.GameModeManager;
 import fr.iambluedev.spartan.node.managers.ServerManager;
+import fr.iambluedev.spartan.node.redis.ChannelHandler;
+import fr.iambluedev.spartan.node.redis.Redis;
+import fr.iambluedev.spartan.node.schedulers.HeartbeatScheduler;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
 public class Node extends SpartanNode{
 
@@ -56,11 +65,14 @@ public class Node extends SpartanNode{
 	private String cmd;
 	private String jarName;
 	
-	public JedisPool jedis;
+	private Redis redis;
 	
-	public Node(){
+	private boolean reloadCache;
+	
+	public Node(boolean reloadCache){
 		Main.instance = this;
 		this.isRunning = false;
+		this.reloadCache = reloadCache;
 		this.log = new File("logs", "node.log");
 		File parent = new File(this.log.getParent());
 		if(!parent.exists()){
@@ -73,7 +85,7 @@ public class Node extends SpartanNode{
 		this.getLogger().log(Level.INFO, "2017 - iambluedev - all Rights reserved");
 		
 		this.events = new EventsManager();
-		this.cacheManager = new CacheManager(this);
+		this.cacheManager = new CacheManager();
 		this.gameManager = new GameModeManager();
 		
 		this.commandManager = new CommandManager();
@@ -111,17 +123,19 @@ public class Node extends SpartanNode{
 			this.getLogger().log(Level.INFO, "Added " + gName + " gamemode ! (" + obj.toString() + ")");
 		}
 		
-		/*this.getLogger().log(Level.INFO, "Preparing to update cache");
-		for(Entry<String, SpartanGameMode> gm : this.cacheManager.getGameModes().entrySet()){
-			this.getLogger().log(Level.INFO, "Updating " + gm.getValue().getName());
-			new SpartanDownload(new SpartanUrl(gm.getValue().getCache().getZipUrl(), new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), gm.getKey()), this).run();
-			try {
-				this.getLogger().log(Level.INFO, "[" + gm.getKey() + "] Extracting " + gm.getValue().getName());
-				new ZipExtract().unzip(new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), new File(this.cacheManager.getFolder(), gm.getKey()).getPath());
-			} catch (IOException e) {
-				e.printStackTrace();
+		if(this.reloadCache){
+			this.getLogger().log(Level.INFO, "Preparing to update cache");
+			for(Entry<String, SpartanGameMode> gm : this.cacheManager.getGameModes().entrySet()){
+				this.getLogger().log(Level.INFO, "Updating " + gm.getValue().getName());
+				new SpartanDownload(new SpartanUrl(gm.getValue().getCache().getZipUrl(), new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), gm.getKey()), this).run();
+				try {
+					this.getLogger().log(Level.INFO, "[" + gm.getKey() + "] Extracting " + gm.getValue().getName());
+					new ZipExtract().unzip(new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), new File(this.cacheManager.getFolder(), gm.getKey()).getPath());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-		}*/
+		}
 		
 		this.cmd = (String) this.getConfig().getJsonObject().get("cmd");
 		this.jarName = this.getConfig().getJsonObject().get("jarName").toString();
@@ -131,28 +145,39 @@ public class Node extends SpartanNode{
 		this.redisPort = Integer.valueOf(jsonObj.get("port") + "");
 		this.redisPassword = (String) jsonObj.get("password");
 		
-		this.jedis = new JedisPool(this.redisHost, this.redisPort);
-		System.out.println(this.jedis.isClosed());
 		
-		System.out.println(this.redisHost + this.redisPassword + this.redisPort);
+	    
+	    this.getLogger().log(Level.INFO, "Connecting to Redis");
+		this.redis = new Redis(this.redisHost, this.redisPort);
+		
 		new Thread(new Runnable(){
 			@Override
 			public void run() {
-				Node.this.getJedis().subscribe(new ChannelHandler(), "node");
+				Node.this.getRedis().get(new Callback<Jedis>() {
+					@Override
+					public void call(Jedis jedis) {
+						jedis.subscribe(new ChannelHandler(), "node");
+					}
+				});
 			}
 		}).start();
+		
+		this.getLogger().log(Level.INFO, "Starting HheartBeat task");
+		Timer timer = new Timer();
+		timer.schedule(new HeartbeatScheduler(), 0, 1000);
 	}
-
-	public Jedis getJedis() {
-		Jedis j = this.jedis.getResource();
-		return j;
-	}	
 	
 	@Override
 	public void start() {
 		this.getLogger().log(Level.INFO, "Starting SpartanNode");
 		this.isRunning = true;
 		Main.getInstance().getEventsManager().getPublisher().raiseEvent(new NodeStartEvent(this));
+		Node.this.getRedis().get(new Callback<Jedis>() {
+			@Override
+			public void call(Jedis jedis) {
+				jedis.publish("node", Node.this.getName() + "-" + Node.this.getId() + " started !");
+			}
+		});
 	}
 
 	@Override
@@ -196,6 +221,12 @@ public class Node extends SpartanNode{
 					 server.getValue().killProcess();
 					 server.getValue().destroyServer();
 				 }
+				 Node.this.getRedis().get(new Callback<Jedis>() {
+						@Override
+						public void call(Jedis jedis) {
+							jedis.publish("node", Node.this.getName() + "-" + Node.this.getId() + " stoped !");
+						}
+					});
 				 Node.this.getLogger().log(Level.INFO, "Stopping node");
 				 System.exit(0);
 			 }
@@ -265,5 +296,25 @@ public class Node extends SpartanNode{
 
 	public ServerManager getServerManager() {
 		return this.serverManager;
+	}
+
+	public Redis getRedis() {
+		return this.redis;
+	}
+
+	public boolean isReloadCache() {
+		return this.reloadCache;
+	}
+
+	public String getRedisHost() {
+		return this.redisHost;
+	}
+
+	public String getRedisPassword() {
+		return this.redisPassword;
+	}
+
+	public Integer getRedisPort() {
+		return this.redisPort;
 	}
 }

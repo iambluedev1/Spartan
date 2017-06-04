@@ -15,7 +15,7 @@ public class GeneralConfig extends SpartanConfig{
 	public void setupConfig() {
 		JSONObject nodeObj = new JSONObject();
 		nodeObj.put("id", (Integer) 0);
-		nodeObj.put("name", "nodegame-1");
+		nodeObj.put("name", "nodegame");
 		nodeObj.put("ram", 8192);
 		this.getJsonObject().put("node", nodeObj);
 		

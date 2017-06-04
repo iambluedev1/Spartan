@@ -8,25 +8,25 @@ import java.util.logging.Level;
 import fr.iambluedev.spartan.api.cache.SpartanCache;
 import fr.iambluedev.spartan.api.cache.SpartanGameCache;
 import fr.iambluedev.spartan.api.gamemode.SpartanGameMode;
-import fr.iambluedev.spartan.api.node.SpartanNode;
 import fr.iambluedev.spartan.api.utils.IOUtils;
+import fr.iambluedev.spartan.node.Main;
 
 public class CacheManager extends SpartanCache{
 
 	private Map<String, SpartanGameMode> gamemodes;
 	private File folder;
-	private SpartanNode instance;
 	
-	public CacheManager(SpartanNode instance){
+	public CacheManager(){
 		this.gamemodes = new HashMap<String, SpartanGameMode>();
 		this.folder = new File("cache");
-		this.instance = instance;
-		/*if(this.folder.exists()){
-			this.instance.getLogger().log(Level.INFO, "Deleting cache folder");
-			IOUtils.deleteDir(this.folder);
+		if(Main.getInstance().isReloadCache()){
+			if(this.folder.exists()){
+				Main.getInstance().getLogger().log(Level.INFO, "Deleting cache folder");
+				IOUtils.deleteDir(this.folder);
+			}
+			
+			this.folder.mkdir();
 		}
-		
-		this.folder.mkdir();*/
 	}
 	
 	@Override
@@ -57,10 +57,6 @@ public class CacheManager extends SpartanCache{
 
 	public File getFolder() {
 		return this.folder;
-	}
-
-	public SpartanNode getInstance() {
-		return this.instance;
 	}
 	
 	
