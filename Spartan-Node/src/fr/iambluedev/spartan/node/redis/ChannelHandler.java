@@ -1,11 +1,8 @@
-package fr.iambluedev.spartan.node;
+package fr.iambluedev.spartan.node.redis;
 
 import redis.clients.jedis.JedisPubSub;
 
 public class ChannelHandler extends JedisPubSub {
-	public ChannelHandler() {
-		// TODO Auto-generated constructor stub
-	}
 	
 	@Override
 	public void onMessage(String channel, String message) {
