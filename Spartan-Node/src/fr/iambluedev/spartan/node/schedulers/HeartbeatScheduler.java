@@ -16,7 +16,6 @@ public class HeartbeatScheduler extends TimerTask {
 		Main.getInstance().getRedis().get(new Callback<Jedis>() {
 			@Override
 			public void call(Jedis jedis) {
-				Main.getInstance().getLogger().log(Level.INFO, "Updated");
 				jedis.hset("nodes", Main.getInstance().getName() + "-" + Main.getInstance().getId(), String.valueOf(System.currentTimeMillis()));
 				Map<String, String> proxies = jedis.hgetAll("nodes");
 				for(Entry<String, String> node : proxies.entrySet()){

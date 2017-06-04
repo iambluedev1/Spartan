@@ -17,6 +17,7 @@ import fr.iambluedev.spartan.api.http.SpartanUrl;
 import fr.iambluedev.spartan.api.node.SpartanNode;
 import fr.iambluedev.spartan.api.server.SpartanServer;
 import fr.iambluedev.spartan.api.utils.Callback;
+import fr.iambluedev.spartan.api.utils.RedisJsonMessage;
 import fr.iambluedev.spartan.api.utils.ZipExtract;
 import fr.iambluedev.spartan.node.command.CreateServerCommand;
 import fr.iambluedev.spartan.node.command.DestroyServerCommand;
@@ -156,7 +157,7 @@ public class Node extends SpartanNode{
 				Node.this.getRedis().get(new Callback<Jedis>() {
 					@Override
 					public void call(Jedis jedis) {
-						jedis.subscribe(new ChannelHandler(), "node");
+						jedis.subscribe(new ChannelHandler(), "node", "node:" + Node.this.getName() + "-" + Node.this.getId());
 					}
 				});
 			}
@@ -175,7 +176,7 @@ public class Node extends SpartanNode{
 		Node.this.getRedis().get(new Callback<Jedis>() {
 			@Override
 			public void call(Jedis jedis) {
-				jedis.publish("node", Node.this.getName() + "-" + Node.this.getId() + " started !");
+				jedis.publish("node", new RedisJsonMessage().setCmd("started").setMessage("Node started !").get());
 			}
 		});
 	}
@@ -224,7 +225,8 @@ public class Node extends SpartanNode{
 				 Node.this.getRedis().get(new Callback<Jedis>() {
 						@Override
 						public void call(Jedis jedis) {
-							jedis.publish("node", Node.this.getName() + "-" + Node.this.getId() + " stoped !");
+							jedis.publish("node", new RedisJsonMessage().setCmd("stoped").setMessage("Node stoped !").get());
+							jedis.hdel("nodes", Node.this.getName() + "-" + Node.this.getId());
 						}
 					});
 				 Node.this.getLogger().log(Level.INFO, "Stopping node");
