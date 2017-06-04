@@ -1,21 +1,16 @@
 package fr.iambluedev.spartan.node;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.iambluedev.spartan.api.cache.SpartanCache;
 import fr.iambluedev.spartan.api.command.SpartanDispatcher;
-import fr.iambluedev.spartan.api.download.SpartanDownload;
 import fr.iambluedev.spartan.api.gamemode.SpartanGame;
-import fr.iambluedev.spartan.api.gamemode.SpartanGameMode;
 import fr.iambluedev.spartan.api.gson.JSONObject;
-import fr.iambluedev.spartan.api.http.SpartanUrl;
 import fr.iambluedev.spartan.api.node.SpartanNode;
 import fr.iambluedev.spartan.api.server.SpartanServer;
-import fr.iambluedev.spartan.api.utils.ZipExtract;
 import fr.iambluedev.spartan.node.command.CreateServerCommand;
 import fr.iambluedev.spartan.node.command.DestroyServerCommand;
 import fr.iambluedev.spartan.node.command.ListGameModeCommand;
@@ -32,6 +27,8 @@ import fr.iambluedev.spartan.node.managers.CommandManager;
 import fr.iambluedev.spartan.node.managers.EventsManager;
 import fr.iambluedev.spartan.node.managers.GameModeManager;
 import fr.iambluedev.spartan.node.managers.ServerManager;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 public class Node extends SpartanNode{
 
@@ -44,6 +41,10 @@ public class Node extends SpartanNode{
 	private String name;
 	private Integer id;
 	
+	private String redisHost;
+	private String redisPassword;
+	private Integer redisPort;
+	
 	private CommandManager commandManager;
 	private CacheManager cacheManager;
 	private GameModeManager gameManager;
@@ -54,6 +55,8 @@ public class Node extends SpartanNode{
 	
 	private String cmd;
 	private String jarName;
+	
+	public JedisPool jedis;
 	
 	public Node(){
 		Main.instance = this;
@@ -108,7 +111,7 @@ public class Node extends SpartanNode{
 			this.getLogger().log(Level.INFO, "Added " + gName + " gamemode ! (" + obj.toString() + ")");
 		}
 		
-		this.getLogger().log(Level.INFO, "Preparing to update cache");
+		/*this.getLogger().log(Level.INFO, "Preparing to update cache");
 		for(Entry<String, SpartanGameMode> gm : this.cacheManager.getGameModes().entrySet()){
 			this.getLogger().log(Level.INFO, "Updating " + gm.getValue().getName());
 			new SpartanDownload(new SpartanUrl(gm.getValue().getCache().getZipUrl(), new File(this.cacheManager.getFolder(), gm.getKey() + ".temp.zip").getPath(), gm.getKey()), this).run();
@@ -118,12 +121,33 @@ public class Node extends SpartanNode{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 		
 		this.cmd = (String) this.getConfig().getJsonObject().get("cmd");
 		this.jarName = this.getConfig().getJsonObject().get("jarName").toString();
+		
+		jsonObj = (JSONObject) this.getConfig().getJsonObject().get("redis");
+		this.redisHost = (String) jsonObj.get("host");
+		this.redisPort = Integer.valueOf(jsonObj.get("port") + "");
+		this.redisPassword = (String) jsonObj.get("password");
+		
+		this.jedis = new JedisPool(this.redisHost, this.redisPort);
+		System.out.println(this.jedis.isClosed());
+		
+		System.out.println(this.redisHost + this.redisPassword + this.redisPort);
+		new Thread(new Runnable(){
+			@Override
+			public void run() {
+				Node.this.getJedis().subscribe(new ChannelHandler(), "node");
+			}
+		}).start();
 	}
 
+	public Jedis getJedis() {
+		Jedis j = this.jedis.getResource();
+		return j;
+	}	
+	
 	@Override
 	public void start() {
 		this.getLogger().log(Level.INFO, "Starting SpartanNode");
