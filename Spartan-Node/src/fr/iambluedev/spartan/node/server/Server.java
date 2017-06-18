@@ -35,8 +35,33 @@ public class Server extends SpartanServer{
 		this.folder.mkdir();
 	}
 	
+	public Server(SpartanGameMode gamemode, String name, Integer port) throws IOException {
+		super(gamemode, port);
+		this.name = name;
+		this.folder = new File("servers", this.name);
+		if(this.folder.exists()){
+			System.out.println("Deleting" + this.name + "server folder");
+			IOUtils.deleteDir(this.folder);
+		}
+		this.folder.mkdir();
+	}
+	
 	public Server(SpartanGameMode gamemode) throws IOException {
 		super(gamemode);
+		this.name = this.getRandomName();
+		this.folder = new File("servers", this.name);
+		if(!new File("servers").exists()){
+			new File("servers").mkdir();
+		}
+		if(this.folder.exists()){
+			System.out.println("Deleting" + this.name + "server folder");
+			IOUtils.deleteDir(this.folder);
+		}
+		this.folder.mkdir();
+	}
+	
+	public Server(SpartanGameMode gamemode, Integer port) throws IOException {
+		super(gamemode, port);
 		this.name = this.getRandomName();
 		this.folder = new File("servers", this.name);
 		if(!new File("servers").exists()){
