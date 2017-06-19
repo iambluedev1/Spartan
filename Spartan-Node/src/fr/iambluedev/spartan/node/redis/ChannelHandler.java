@@ -18,14 +18,16 @@ public class ChannelHandler extends JedisPubSub {
 		JSONObject jsonObj = null;
 		try {
 			jsonObj = (JSONObject) new JSONParser().parse(message);
-		} catch (ParseException e) {}
+		} catch (ParseException e) {
+			return;
+		}
 		String id = (String) jsonObj.get("id");
 		String cmd = (String) jsonObj.get("cmd");
 		String content = (String) jsonObj.get("content");
 		
 		if(channel.equalsIgnoreCase("node")){
-			if(cmd.equalsIgnoreCase("hasEnought") && !content.isEmpty()){
-				if(Main.getInstance().hasEnoughtRam(Integer.valueOf(content))){
+			if(cmd.equalsIgnoreCase("hasEnoughtForGm") && !content.isEmpty()){
+				if(Main.getInstance().hasEnoughtRam(Main.getInstance().getGameManager().getGameMode(content).getUsedRam())){
 					Main.getInstance().getLogger().log(Level.INFO, "Received hasEnought question from " + id);
 					Main.getInstance().getRedis().get(new Callback<Jedis>() {
 						@Override
