@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.Timer;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,6 +38,8 @@ import fr.iambluedev.spartan.node.managers.GameModeManager;
 import fr.iambluedev.spartan.node.managers.ServerManager;
 import fr.iambluedev.spartan.node.redis.ChannelHandler;
 import fr.iambluedev.spartan.node.redis.Redis;
+import fr.iambluedev.spartan.node.redis.RedisPublisher;
+import fr.iambluedev.spartan.node.redis.RedisSubscriber;
 import fr.iambluedev.spartan.node.schedulers.HeartbeatScheduler;
 import redis.clients.jedis.Jedis;
 
@@ -146,8 +149,6 @@ public class Node extends SpartanNode{
 		this.redisPort = Integer.valueOf(jsonObj.get("port") + "");
 		this.redisPassword = (String) jsonObj.get("password");
 		
-		
-	    
 	    this.getLogger().log(Level.INFO, "Connecting to Redis");
 		this.redis = new Redis(this.redisHost, this.redisPort);
 		

@@ -32,7 +32,7 @@ public class ChannelHandler extends JedisPubSub {
 					Main.getInstance().getRedis().get(new Callback<Jedis>() {
 						@Override
 						public void call(Jedis jedis) {
-							jedis.publish("node", new RedisJsonMessage().setCmd("hasEnoughtResponse").setContent("This node has enought ram").get());
+							jedis.publish("node", new RedisJsonMessage().setCmd("hasEnoughtResponse").setContent("This node has enought ram for gm : " + content).get());
 						}
 					});
 				}
