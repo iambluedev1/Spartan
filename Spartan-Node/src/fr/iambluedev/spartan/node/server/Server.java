@@ -104,20 +104,37 @@ public class Server extends SpartanServer{
 		//processBuilder.redirectError(Redirect.INHERIT);
 		
 		Main.getInstance().getLogger().log(Level.INFO, "[" + this.getName() + "] Starting server");
-		Process process = processBuilder.start();
-		this.setProcess(process);
-		BufferedReader output = new BufferedReader(new InputStreamReader(process.getInputStream()));
-		String ligne = "";
-		while ((ligne = output.readLine()) != null) {
-		    if(ligne.contains("Done")){
-		    	String regex = "Done \\([0-9a-zA-z-,]+s\\)! For help, type \"help\" or \"\\?\"";
-				Pattern pattern = Pattern.compile(regex);
-				Matcher matcher = pattern.matcher(ligne);
-				Main.getInstance().getLogger().log(Level.INFO, "[" + this.getName() + "] Started in " + ligne.replace(matcher.replaceAll(""), "").replace("(", "").replace(")", "").replace("! For help, type \"help\" or \"?\"", "").replaceAll("Done", "").replaceAll(" ", ""));
-				break;
+		new Thread(new Runnable() {
+		    public void run() {
+		    	Process process = null;
+				try {
+					process = processBuilder.start();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				Server.this.setProcess(process);
+				BufferedReader output = new BufferedReader(new InputStreamReader(process.getInputStream()));
+				String ligne = "";
+				try {
+					while ((ligne = output.readLine()) != null) {
+					    if(ligne.contains("Done")){
+					    	String regex = "Done \\([0-9a-zA-z-,]+s\\)! For help, type \"help\" or \"\\?\"";
+							Pattern pattern = Pattern.compile(regex);
+							Matcher matcher = pattern.matcher(ligne);
+							Main.getInstance().getLogger().log(Level.INFO, "[" + Server.this.getName() + "] Started in " + ligne.replace(matcher.replaceAll(""), "").replace("(", "").replace(")", "").replace("! For help, type \"help\" or \"?\"", "").replaceAll("Done", "").replaceAll(" ", ""));
+							break;
+					    }
+					    if(ligne.contains("Listening on")){
+					    	Main.getInstance().getLogger().log(Level.INFO, "[" + Server.this.getName() + "] Successfully started");
+							break;
+					    }
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				Main.getInstance().getEventsManager().getPublisher().raiseEvent(new ServerStartEvent(Server.this));
 		    }
-		}
-		Main.getInstance().getEventsManager().getPublisher().raiseEvent(new ServerStartEvent(this));
+		}).start();
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public class Main {
 			String[] strings = string.split("=");
 			params.put(strings[0].replace("-", ""), strings[1]);
 		}
-		Boolean reloadCache = (Boolean) params.get("reloadCache");
+		Boolean reloadCache = Boolean.valueOf((String) params.get("reloadCache"));
 		if(reloadCache == null) {
 			reloadCache = false;
 		}

@@ -37,10 +37,16 @@ public class ChannelHandler extends JedisPubSub {
 					});
 				}
 			}
-		}else if(channel.equalsIgnoreCase("node:" + Main.getInstance().getName() + "-" + Main.getInstance().getId())){
+		}else if(channel.equalsIgnoreCase("node:" + Main.getInstance().getName() + "_" + Main.getInstance().getId())){
 			if(cmd.equalsIgnoreCase("createserver") && !content.isEmpty()){
 				Main.getInstance().getLogger().log(Level.INFO, "Received createServer order from " + id);
 				Main.getInstance().getCommandManager().dispatchCommand("createserver " + content);
+				Main.getInstance().getRedis().get(new Callback<Jedis>() {
+					@Override
+					public void call(Jedis jedis) {
+						jedis.publish("node:" + id, new RedisJsonMessage().setCmd("result").setContent("Starting server").get());
+					}
+				});
 			}
 			
 			if(cmd.equalsIgnoreCase("destroyserver") && !content.isEmpty()){
